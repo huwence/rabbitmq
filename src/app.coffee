@@ -8,8 +8,7 @@ class App
 
     server: (request, response) ->
         ip = @get_ip request
-        url = request.url
-        url_parts = url.parse url, true
+        url_parts = url.parse request.url, true
         url_parts.query.ip = ip
 
         @handler_route url_parts.pathname, url_parts.query, response
