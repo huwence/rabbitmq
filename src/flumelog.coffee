@@ -5,6 +5,8 @@ configenv = require '../config/environment'
 content_type = 'application/json; charset=utf-8'
 
 module.exports = (data, callback) ->
+    return false if typeof data != 'string'
+
     timestamp = +new Date()
 
     #log data
@@ -23,7 +25,6 @@ module.exports = (data, callback) ->
     }, (response) ->
         callback response if typeof callback is 'function'
 
-    return false if typeof data != 'string'
     #post log data
-    post_request.write(log_data)
+    post_request.write JSON.stringify(log_data)
     post_request.end()
