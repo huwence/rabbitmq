@@ -28,7 +28,7 @@ class App
             request.connection.socket.remoteAddress
 
     handler_route: (path, query, response)->
-        return @error(response) if Object.prototype.toString.call query != '[object Object]'
+        return @error(response) if Object.prototype.toString.call(query) != '[object Object]'
         #use gif image to handle request
         action = @get_action(path)
         return @error(response) if !action
@@ -40,7 +40,7 @@ class App
         rpath = /^\/(\w+)\/(\w+)\.gif$/
         matches = rpath.exec path
         action = if matches then matches[1] + '_' + matches[2] else false
-        action = if typeof @[action] is 'function' then action else false
+        if typeof @[action] is 'function' then action else false
 
     #card statistics
     stats_c: (query, response) ->
