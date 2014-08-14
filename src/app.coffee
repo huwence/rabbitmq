@@ -4,7 +4,7 @@ amqptask = require './amqptask'
 
 class App
     #listen port
-    @port = 8088
+    port = 8088
 
     server: (request, response) ->
         ip = @get_ip request
@@ -15,8 +15,10 @@ class App
         @handler_route url_parts.pathname, url_parts.query, response
 
     run: () ->
-        http.createServer @server
-            .listen @port
+        self = @
+        http.createServer (reqeust, response) ->
+                self.server()
+            .listen port
 
         console.log 'app start ...'
 
@@ -27,7 +29,7 @@ class App
             request.connection.socket.remoteAddress
 
     handler_route: (path, query, response)->
-        @error() if Object.prototype.toString.call query is not '[object Object]'
+        @error() if Object.prototype.toString.call query != '[object Object]'
         #use gif image to handle request
         action = @get_action(path)
         @error() if !action
