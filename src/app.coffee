@@ -1,6 +1,6 @@
 http = require 'http'
 url = require 'url'
-amqptask = require './amqptask_exchange'
+amqptask = require './amqptask'
 
 class App
     #listen port
@@ -12,8 +12,7 @@ class App
         url_parts = url.parse url, true
         url_parts.query.ip = ip
 
-        @handler_route url_parts.pathname, url_parts.query
-        end_write response
+        @handler_route url_parts.pathname, url_parts.query, response
 
     run: () ->
         http.createServer @server
@@ -27,14 +26,14 @@ class App
             request.socket.remoteAddress or
             request.connection.socket.remoteAddress
 
-    handler_route: (path, query)->
+    handler_route: (path, query, response)->
         @error() if Object.prototype.toString.call query is not '[object Object]'
         #use gif image to handle request
         action = @get_action(path)
         @error() if !action
 
         #exec method
-        method.call @, query
+        method.call @, query, response
 
     get_action: (path) ->
         rpath = /^\/(\w+)\/(\w+)\.gif$/
@@ -43,22 +42,28 @@ class App
         action = if typeof @[action] is 'function' then action else false
 
     #card statistics
-    stats_c: (query) ->
+    stats_c: (query, response) ->
         query.type = 'card'
-        amqptask.emit JSON.stringify(query)
+        @emit_message JSON.stringify(query), response
 
     #game statistics
-    stats_g: (query) ->
+    stats_g: (query, response) ->
         query.type = 'game'
-        amqptask.emit JSON.stringify(query)
+        @emit_message JSON.stringify(query), response
 
     #invite card statistics
-    stats_i: (query) ->
+    stats_i: (query, response) ->
         query.type = 'invite'
-        amqptask.emit JSON.stringify(query)
+        @emit_message JSON.stringify(query), response
 
     error: () ->
         throw 'request error, please check request url'
+
+    emit_message: (message, response) ->
+        self = @
+
+        amqptask.send message, (result) ->
+            self.end_write(response) if 0 is result.status
 
     end_write: (response) ->
         #1x1 gif
