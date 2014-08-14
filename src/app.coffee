@@ -1,21 +1,22 @@
 http = require 'http'
 url = require 'url'
-flumelog = require './flumelog'
+amqptask = require './amqptask_exchange'
 
 class App
     #listen port
     @port = 8088
 
     server: (request, response) ->
-        ip = @get_ip(request)
+        ip = @get_ip request
         url = request.url
         url_parts = url.parse url, true
+        url_parts.query.ip = ip
 
-        @handler_route(url_parts.pathname, url_parts.query)
+        @handler_route url_parts.pathname, url_parts.query
         end_write response
 
     run: () ->
-        http.createSever @server
+        http.createServer @server
             .listen @port
 
         console.log 'app start ...'
@@ -44,17 +45,17 @@ class App
     #card statistics
     stats_c: (query) ->
         query.type = 'card'
-        flumelog query
+        amqptask.emit JSON.stringify(query)
 
     #game statistics
     stats_g: (query) ->
         query.type = 'game'
-        flumelog query
+        amqptask.emit JSON.stringify(query)
 
     #invite card statistics
     stats_i: (query) ->
         query.type = 'invite'
-        flumelog query
+        amqptask.emit JSON.stringify(query)
 
     error: () ->
         throw 'request error, please check request url'
@@ -65,5 +66,8 @@ class App
         buf.write("R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=", "base64")
         response.writeHead 200, {'Content-Type': 'image/gif'}
         response.end buf
+
+app = new App()
+app.run()
 
 module.exports = App

@@ -9,7 +9,9 @@
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-uglify": "^0.5.1",
-    "mocha": "*"
+    "mocha": "*",
+    "amqplib": "*",
+    "pm2": "*"
   },
   "author": "huwence@mugeda.com"
 }
