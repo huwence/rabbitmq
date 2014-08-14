@@ -16,8 +16,8 @@ class App
 
     run: () ->
         self = @
-        http.createServer (reqeust, response) ->
-                self.server()
+        http.createServer (request, response) ->
+                self.server(request, response)
             .listen port
 
         console.log 'app start ...'
