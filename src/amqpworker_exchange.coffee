@@ -10,7 +10,7 @@ amqp.connect configenv.amqp.address
         conn.createChannel().then (ch) ->
             doWork  = (message) ->
                 body = message.content.toString()
-                flumelog body
+                flumelog JSON.parse(body)
 
                 setTimeout () ->
                     ch.ack(message)

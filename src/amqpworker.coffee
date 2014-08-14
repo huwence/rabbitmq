@@ -11,7 +11,7 @@ amqp.connect configenv.amqp.address
             doWork  = (message) ->
                 body = message.content.toString()
                 secs = body.split('.').length - 1
-                flumelog body
+                flumelog JSON.parse(body)
 
                 #acknowledge message
                 setTimeout () ->
