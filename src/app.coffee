@@ -28,10 +28,10 @@ class App
             request.connection.socket.remoteAddress
 
     handler_route: (path, query, response)->
-        @error(response) if Object.prototype.toString.call query != '[object Object]'
+        return @error(response) if Object.prototype.toString.call query != '[object Object]'
         #use gif image to handle request
         action = @get_action(path)
-        @error(response) if !action
+        return @error(response) if !action
 
         #exec method
         action.call @, query, response
