@@ -28,10 +28,10 @@ class App
             request.connection.socket.remoteAddress
 
     handler_route: (path, query, response)->
-        @error() if Object.prototype.toString.call query != '[object Object]'
+        @error(response) if Object.prototype.toString.call query != '[object Object]'
         #use gif image to handle request
         action = @get_action(path)
-        @error() if !action
+        @error(response) if !action
 
         #exec method
         method.call @, query, response
@@ -57,8 +57,11 @@ class App
         query.type = 'invite'
         @emit_message JSON.stringify(query), response
 
-    error: () ->
-        throw 'request error, please check request url'
+    error: (response) ->
+        #return 404 not found error
+        response.writeHead 404, {'Content-Type': 'text/plain'}
+        response.write "404 Not Found\n"
+        response.end
 
     emit_message: (message, response) ->
         self = @
