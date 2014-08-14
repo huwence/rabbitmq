@@ -34,7 +34,7 @@ class App
         return @error(response) if !action
 
         #exec method
-        action.call @, query, response
+        @[action].call @, query, response
 
     get_action: (path) ->
         rpath = /^\/(\w+)\/(\w+)\.gif$/
