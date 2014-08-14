@@ -60,8 +60,8 @@ class App
     error: (response) ->
         #return 404 not found error
         response.writeHead 404, {'Content-Type': 'text/plain'}
-        response.write "404 Not Found\n"
-        response.end
+        response.write "404 Not Found^~^\n"
+        response.end()
 
     emit_message: (message, response) ->
         self = @
