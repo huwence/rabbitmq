@@ -9,7 +9,11 @@ describe('flumelog', function () {
         _request = http.request
         http.request = function (param, callback) {
             process.nextTick(function () {
-                callback('success callback')   
+                callback({
+                    on: function (type, cb) {
+                        cb('data')
+                    }
+                })   
             })
 
             return {
@@ -25,17 +29,11 @@ describe('flumelog', function () {
 
     it('should triggle callback function', function () {
         flumelog('{"mugeda_stats":"test"}', function (response) {
-            assert.equal(response, 'success callback')
+            assert.equal(response, 'data')
         })
     })
 
     after(function () {
         http.request = _request;
-    })
-
-    it('should return false if message is object', function () {
-        var result = flumelog({})
-
-        assert.equal(result, false)
     })
 })

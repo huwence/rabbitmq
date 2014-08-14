@@ -1,6 +1,8 @@
 amqp = require 'amqplib'
 flumelog = require './flumelog'
 configenv = require '../config/environment'
+base64_util = require './base64_util'
+query_parse = require './query_parse'
 
 amqp.connect configenv.amqp.address
     .then (conn) ->
@@ -10,10 +12,14 @@ amqp.connect configenv.amqp.address
         conn.createChannel().then (ch) ->
             doWork  = (message) ->
                 body = message.content.toString()
-                secs = body.split('.').length - 1
-                flumelog JSON.parse(body)
+                json_body = JSON.parse body
+                json_body.custom = query_parse(base64_util.decode(json_body.custom, true)) if json_body.custom
+
+                #emit to flume log
+                flumelog json_body
 
                 #acknowledge message
+                secs = body.split('.').length - 1
                 setTimeout () ->
                     ch.ack(message)
                 , secs * 1000
