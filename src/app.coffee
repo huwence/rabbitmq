@@ -44,17 +44,18 @@ class App
 
     #card statistics
     stats_c: (query, response) ->
-        query.type = 'card'
+        #category
+        query.cty = 'card'
         @emit_message JSON.stringify(query), response
 
     #game statistics
     stats_g: (query, response) ->
-        query.type = 'game'
+        query.cty = 'game'
         @emit_message JSON.stringify(query), response
 
     #invite card statistics
     stats_i: (query, response) ->
-        query.type = 'invite'
+        query.cty = 'invite'
         @emit_message JSON.stringify(query), response
 
     error: (response) ->
