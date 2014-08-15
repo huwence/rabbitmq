@@ -17,6 +17,7 @@ amqp.connect configenv.amqp.address
                 if json_body.custom
                     json_custom = query_parse(base64_util.decode(json_body.custom, true))
                     json_body[key] = val for key, val of json_custom
+                    delete json_body.custom
 
                 #emit to flume log
                 flumelog json_body
