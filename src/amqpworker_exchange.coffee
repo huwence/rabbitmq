@@ -13,8 +13,11 @@ amqp.connect configenv.amqp.address
             doWork  = (message) ->
                 body = message.content.toString()
                 json_body = JSON.parse body
-                json_custom = query_parse(base64_util.decode(json_body.custom, true))
-                json_body[key] = val for key, val of json_body if json_body.custom
+
+                if json_body.custom
+                    json_custom = query_parse(base64_util.decode(json_body.custom, true))
+                    json_body[key] = val for key, val of json_custom
+
 
                 flumelog json_body
 
