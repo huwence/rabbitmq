@@ -1,11 +1,20 @@
 http = require 'http'
 configenv = require '../config/environment'
+base64_util = require './base64_util'
+query_parse = require './query_parse'
 
 #log parameters
 content_type = 'application/json; charset=UTF-8'
 
 module.exports = (data, callback) ->
-    timestamp = +new Date()
+
+	if data.custom
+		custom = query_parse(base64_util.decode(data.custom))
+		data[key] = val for key, val of data
+		delete data.custom
+
+    date = new Date()
+	data.time = date.getFullYear() + 
 
     #log data
     log_data = [{
@@ -22,9 +31,7 @@ module.exports = (data, callback) ->
             'Content-Type': content_type
         }
     }, (response) ->
-        response.on('data', (result) ->
-            callback result if typeof callback is 'function'
-        )
+		callback response if typeof callback is 'function'
 
     #post log data
     post_request.write JSON.stringify(log_data)
