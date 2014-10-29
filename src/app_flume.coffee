@@ -3,35 +3,35 @@ url = require 'url'
 flumelog = require './flumelog'
 
 class App
-	#listen port
-	port = 8088
+    #listen port
+    port = 8088
 
-	server: (request, response) ->
-		ip = @get_ip(request)
-		agent = @get_agent(request)
-		url_parts = url.parse request.url, true
-		url_parts.query.ip = ip or ''
-		url_parts.query.agent = agent or ''
-		@handler_route url_parts.pathname, url_parts.query, response
+    server: (request, response) ->
+        ip = @get_ip(request)
+        agent = @get_agent(request)
+        url_parts = url.parse request.url, true
+        url_parts.query.ip = ip or ''
+        url_parts.query.agent = agent or ''
+        @handler_route url_parts.pathname, url_parts.query, response
 
-	run: () ->
-		self = @
-		http.createServer (request, response) ->
-				self.server(request, response)
-			.listen port
+    run: () ->
+        self = @
+        http.createServer (request, response) ->
+            self.server(request, response)
+                .listen port
 
-		console.log 'app start ...'
+        console.log 'app start ...'
 
-	get_ip: (request) ->
-		return request.headers['x-forwarder-for'] or
+    get_ip: (request) ->
+        return request.headers['x-forwarder-for'] or
             request.connection.remoteAddress or
             request.socket.remoteAddress or
             request.connection.socket.remoteAddress
 
-	get_agent: (request) ->
-		request.headers['user-agent']
+    get_agent: (request) ->
+        request.headers['user-agent']
 
-	handler_route: (path, query, response)->
+    handler_route: (path, query, response)->
         return @error(response) if Object.prototype.toString.call(query) != '[object Object]'
         #use gif image to handle request
         action = @get_action(path)
@@ -40,7 +40,7 @@ class App
         #exec method
         @[action].call @, query, response
 
-	get_action: (path) ->
+    get_action: (path) ->
         rpath = /^\/(\w+)\/(\w+)\.gif$/
         matches = rpath.exec path
         action = if matches then matches[1] + '_' + matches[2] else false
@@ -49,17 +49,17 @@ class App
     #card statistics
     stats_c: (query, response) ->
         #category
-        query.cty = 'card'
+        query.mscty = 'card'
         @emit_message query, response
 
     #game statistics
     stats_g: (query, response) ->
-        query.cty = 'game'
+        query.mscty = 'game'
         @emit_message query, response
 
     #invite card statistics
     stats_i: (query, response) ->
-        query.cty = 'invite'
+        query.mscty = 'invite'
         @emit_message query, response
 
     error: (response) ->

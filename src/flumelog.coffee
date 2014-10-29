@@ -7,33 +7,39 @@ date_parse = require './date_parse'
 #log parameters
 content_type = 'application/json; charset=UTF-8'
 
+http.globalAgent.maxSockets = 10000
+
 #handle data from client, include adding time, decode custom date, decode path
 handleData = (data) ->
-	#adding time label
-	data.time = date_parse.getdate()
+    #adding time label
+    data.time = date_parse.getdate('Y-m-dTH:i:s')
+    data.msts = parseInt(data.msts, 10) if data.msts
+    data.msetd = parseInt(data.msetd, 10) if data.msetd
 
-	#decode path
-	if data.msp
-		paths = query_parse(decodeURIComponent(data.msp))
-		data[key] = val for key, val of paths if paths
-		delete data.msp
-	
-	#decode custom
-	if data.custom
-		custom = query_parse(base64_util.decode(data.custom))
-		data[key] = val for key, val of custom
-		delete data.custom
+    #decode path
+    if data.msp
+        pathurl = decodeURIComponent(data.msp)
+        query = pathurl.substring(pathurl.indexOf('?'))
+        paths = query_parse(query)
+        data[key] = val for key, val of paths if paths
+        delete data.msp
+ 
+    #decode custom
+    if data.custom
+        custom = query_parse(base64_util.decode(data.custom))
+        data[key] = val for key, val of custom
+        delete data.custom
 
 module.exports = (data, callback) ->
-	handleData(data)
-	
-	log_data = [{
+    handleData(data)
+ 
+    log_data = [{
         "headers" : data
-        "body": "log-#{timestamp}"
+        "body": "log-#{data.time}"
     }]
 
-	#create post request
-	post_request = http.request {
+    #create post request
+    post_request = http.request {
         host: configenv.flume.address,
         port: configenv.flume.port,
         method: 'POST',
@@ -41,7 +47,11 @@ module.exports = (data, callback) ->
             'Content-Type': content_type
         }
     }, (response) ->
-		callback response if typeof callback is 'function'
+        callback response if typeof callback is 'function'
+ 
+    post_request.on('error', (response) ->
+        post_request.abort()
+    )
 
     #post log data
     post_request.write JSON.stringify(log_data)
