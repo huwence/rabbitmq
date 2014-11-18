@@ -98,7 +98,13 @@ class App
         #1x1 gif
         buf = new Buffer(35)
         buf.write("R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=", "base64")
-        response.writeHead 200, {'Content-Type': 'image/gif'}
+        exdate = new Date('2020-12-30')
+        cookie = "msuid=#{@cookies};domain=.mugeda.com;expires=" + exdate.toGMTString()
+        headers = {
+            'Set-Cookie': cookie
+            'Content-Type': 'image/gif'
+        }
+        response.writeHead 200, headers
         response.end buf
 
 app = new App()
