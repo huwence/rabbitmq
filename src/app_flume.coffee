@@ -1,6 +1,7 @@
 http = require 'http'
 url = require 'url'
 flumelog = require './flumelog'
+cookieUtil = require './cookie_parse'
 
 class App
     #listen port
@@ -12,6 +13,8 @@ class App
         url_parts = url.parse request.url, true
         url_parts.query.ip = ip or ''
         url_parts.query.agent = agent or ''
+
+        @handle_cookie url_parts.query, request
         @handler_route url_parts.pathname, url_parts.query, response
 
     run: () ->
@@ -30,6 +33,23 @@ class App
 
     get_agent: (request) ->
         request.headers['user-agent']
+
+    get_cookie: (request) ->
+        request.headers.cookie
+
+    handle_cookie: (query, request) ->
+        mscok = query.mscok
+
+        if !mscok
+            mscok = @get_cookie(request)
+
+        cookies = cookieUtil.getCookie(mscok)
+
+        if !cookies['msuid']
+            cookies['msuid'] = cookieUtil.genUID()
+
+        @cookies = cookies
+        query.msuid = cookies['msuid']
 
     handler_route: (path, query, response)->
         return @error(response) if Object.prototype.toString.call(query) != '[object Object]'
