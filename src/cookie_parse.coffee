@@ -1,7 +1,7 @@
 getCookie = (cookies) ->
     list = {}
 
-    if cookies.length
+    if cookies
         cookies = cookies.split ';'
         cookies.forEach((cookie) ->
             parts = cookie.split('=')

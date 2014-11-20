@@ -14,7 +14,7 @@ class App
         url_parts.query.ip = ip or ''
         url_parts.query.agent = agent or ''
 
-        @handle_cookie url_parts.query, request
+        #@handle_cookie url_parts.query, request
         @handler_route url_parts.pathname, url_parts.query, response
 
     run: () ->
@@ -38,26 +38,24 @@ class App
         request.headers.cookie
 
     handle_cookie: (query, request) ->
-        mscok = query.mscok
+        # First find uid in query url, if not found in query, then get it in cookies, 
+        # if also not found in cookie , we need to generate a new uid for current request
+        @msuid = query.msuid
 
-        if !mscok
-            mscok = @get_cookie(request)
+        if !@msuid
+            cookies = cookieUtil.getCookie(@get_cookie(request))
+            @msuid = cookies['msuid']
+            @msuid = cookieUtil.genUID() if !@msuid
 
-        cookies = cookieUtil.getCookie(mscok)
-
-        if !cookies['msuid']
-            cookies['msuid'] = cookieUtil.genUID()
-
-        @cookies = cookies
-        query.msuid = cookies['msuid']
+        query.msuid = @msuid
 
     handler_route: (path, query, response)->
         return @error(response) if Object.prototype.toString.call(query) != '[object Object]'
-        #use gif image to handle request
+        # use gif image to handle request
         action = @get_action(path)
         return @error(response) if !action
 
-        #exec method
+        # exec method
         @[action].call @, query, response
 
     get_action: (path) ->
@@ -98,13 +96,12 @@ class App
         #1x1 gif
         buf = new Buffer(35)
         buf.write("R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=", "base64")
-        exdate = new Date('2020-12-30')
-        cookie = "msuid=#{@cookies};domain=.mugeda.com;expires=" + exdate.toGMTString()
-        headers = {
-            'Set-Cookie': cookie
-            'Content-Type': 'image/gif'
-        }
-        response.writeHead 200, headers
+        response.writeHead(200, {
+            'Content-Type': 'image/gif',
+            'Content-Length': buf.length,
+            'Cache-Control': 'private, no-cache, no-cache=Set-Cookie',
+            'Pragma': 'no-cache'
+        })
         response.end buf
 
 app = new App()
