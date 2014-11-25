@@ -18,11 +18,16 @@ handleData = (data) ->
 
     #decode path
     if data.msp
-        pathurl = decodeURIComponent(data.msp)
-        query = pathurl.substring(pathurl.indexOf('?'))
-        paths = query_parse(query)
-        data[key] = val for key, val of paths if paths
-        delete data.msp
+        try
+            pathurl = decodeURIComponent(data.msp)
+        catch error
+            pathurl = unescape(data.msp)
+
+        if pathurl
+            query = pathurl.substring(pathurl.indexOf('?'))
+            paths = query_parse(query)
+            data[key] = val for key, val of paths if paths
+            delete data.msp
  
     #decode custom
     if data.custom
