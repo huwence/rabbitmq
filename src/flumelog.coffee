@@ -32,7 +32,7 @@ handleData = (data) ->
     #decode custom
     if data.custom
         custom = query_parse(base64_util.decode(data.custom))
-        data[key] = val for key, val of custom
+        data[key] = val for key, val of custom if custom
         delete data.custom
 
 module.exports = (data, callback) ->
