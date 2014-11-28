@@ -43,7 +43,7 @@ module.exports = (data, callback) ->
         "body": "log-#{data.time}"
     }]
 
-    console.log(log_data)
+    #console.log(log_data)
 
     #create post request
     post_request = http.request {
