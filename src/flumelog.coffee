@@ -33,7 +33,7 @@ handleData = (data) ->
     if data.custom
         custom = query_parse(base64_util.decode(data.custom))
         data[key] = val for key, val of custom if custom
-        delete data.custom
+        #delete data.custom
 
 module.exports = (data, callback) ->
     handleData(data)
@@ -43,7 +43,7 @@ module.exports = (data, callback) ->
         "body": "log-#{data.time}"
     }]
 
-    #console.log(log_data)
+    console.log(log_data)
 
     #create post request
     post_request = http.request {
