@@ -10,6 +10,11 @@ content_type = 'application/json; charset=UTF-8'
 
 http.globalAgent.maxSockets = 10000
 
+reservedFields = {
+    'time': '__t'
+    'date': '__d'
+}
+
 #handle data from client, include adding time, decode custom date, decode path
 handleData = (data) ->
     #adding time label
@@ -31,9 +36,11 @@ handleData = (data) ->
             delete data.msp
  
     #decode custom
-    if data.custom
-        custom = query_parse(base64_util.decode(data.custom))
-        data[key] = val for key, val of custom if custom
+    #if data.custom
+    #    custom = query_parse(base64_util.decode(data.custom))
+    #    if custom
+    #        if !reservedFields[key] then data[key] = val else data[reservedFields[key]] = val for key, val of custom
+
         #delete data.custom
 
 module.exports = (data, callback) ->
