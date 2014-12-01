@@ -3,6 +3,7 @@ configenv = require '../config/environment'
 base64_util = require './base64_util'
 query_parse = require './query_parse'
 date_parse = require './date_parse'
+mongo = require './mongo'
 
 #log parameters
 content_type = 'application/json; charset=UTF-8'
@@ -43,7 +44,8 @@ module.exports = (data, callback) ->
         "body": "log-#{data.time}"
     }]
 
-    console.log(log_data)
+    #insert mongo data
+    mongo.insert(data)
 
     #create post request
     post_request = http.request {
