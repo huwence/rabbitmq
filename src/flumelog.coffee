@@ -13,7 +13,7 @@ http.globalAgent.maxSockets = 10000
 #handle data from client, include adding time, decode custom date, decode path
 handleData = (data) ->
     #adding time label
-    data.time = date_parse.getdate('Y-m-dTH:i:s')
+    data.__time = date_parse.getdate('Y-m-dTH:i:s')
     data.msts = parseInt(data.msts, 10) if data.msts
     data.msetd = parseInt(data.msetd, 10) if data.msetd
 
@@ -41,7 +41,7 @@ module.exports = (data, callback) ->
  
     log_data = [{
         "headers" : data
-        "body": "log-#{data.time}"
+        "body": "log-#{data.__time}"
     }]
 
     #insert mongo data
