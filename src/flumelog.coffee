@@ -3,9 +3,9 @@ configenv = require '../config/environment'
 base64_util = require './base64_util'
 query_parse = require './query_parse'
 date_parse = require './date_parse'
-mongo = require './mongo'
+#mongo = require './mongo'
 
-#log parameters
+# log parameters
 content_type = 'application/json; charset=UTF-8'
 
 http.globalAgent.maxSockets = 10000
@@ -15,14 +15,14 @@ reservedFields = {
     'date': '__d'
 }
 
-#handle data from client, include adding time, decode custom date, decode path
+# handle data from client, include adding time, decode custom date, decode path
 handleData = (data) ->
     #adding time label
     data.__time = date_parse.getdate('Y-m-dTH:i:s')
     data.msts = parseInt(data.msts, 10) if data.msts
     data.msetd = parseInt(data.msetd, 10) if data.msetd
 
-    #decode path
+    # decode path
     if data.msp
         try
             pathurl = decodeURIComponent(data.msp)
@@ -35,7 +35,7 @@ handleData = (data) ->
             data[key] = val for key, val of paths if paths
             delete data.msp
  
-    #decode custom
+    # decode custom
     #if data.custom
     #    custom = query_parse(base64_util.decode(data.custom))
     #    if custom
@@ -51,10 +51,10 @@ module.exports = (data, callback) ->
         "body": "log-#{data.__time}"
     }]
 
-    #insert mongo data
-    mongo.insert(data)
+    # insert mongo data
+    #mongo.insert(data)
 
-    #create post request
+    # create post request
     post_request = http.request {
         host: configenv.flume.address,
         port: configenv.flume.port,
@@ -69,6 +69,6 @@ module.exports = (data, callback) ->
         post_request.abort()
     )
 
-    #post log data
+    # post log data
     post_request.write JSON.stringify(log_data)
     post_request.end()
