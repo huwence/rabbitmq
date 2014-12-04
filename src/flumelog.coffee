@@ -33,7 +33,7 @@ handleData = (data) ->
             query = pathurl.substring(pathurl.indexOf('?'))
             paths = query_parse(query)
             data[key] = val for key, val of paths if paths
-            delete data.msp
+            #delete data.msp
  
     # decode custom
     #if data.custom
