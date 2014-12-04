@@ -26,7 +26,7 @@ class App
         console.log 'app start ...'
 
     get_ip: (request) ->
-        return request.headers['X-Forwarded-For'] or
+        return request.headers['x-forwarded-for'] or
             request.connection.remoteAddress or
             request.socket.remoteAddress or
             request.connection.socket.remoteAddress
