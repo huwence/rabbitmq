@@ -28,8 +28,7 @@ class App
     get_ip: (request) ->
         return request.headers['x-forwarded-for'] or
             request.connection.remoteAddress or
-            request.socket.remoteAddress or
-            request.connection.socket.remoteAddress
+            request.socket.remoteAddress
 
     get_agent: (request) ->
         request.headers['user-agent']
