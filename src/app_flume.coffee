@@ -1,7 +1,6 @@
 http = require 'http'
 url = require 'url'
 flumelog = require './flumelog'
-cookieUtil = require './cookie_parse'
 
 class App
     #listen port
@@ -36,17 +35,17 @@ class App
     get_cookie: (request) ->
         request.headers.cookie
 
-    handle_cookie: (query, request) ->
-        # First find uid in query url, if not found in query, then get it in cookies, 
-        # if also not found in cookie , we need to generate a new uid for current request
-        @msuid = query.msuid
+    #handle_cookie: (query, request) ->
+    #    # First find uid in query url, if not found in query, then get it in cookies, 
+    #    # if also not found in cookie , we need to generate a new uid for current request
+    #    @msuid = query.msuid
 
-        if !@msuid
-            cookies = cookieUtil.getCookie(@get_cookie(request))
-            @msuid = cookies['msuid']
-            @msuid = cookieUtil.genUID() if !@msuid
+    #    if !@msuid
+    #        cookies = cookieUtil.getCookie(@get_cookie(request))
+    #        @msuid = cookies['msuid']
+    #        @msuid = cookieUtil.genUID() if !@msuid
 
-        query.msuid = @msuid
+    #    query.msuid = @msuid
 
     handler_route: (path, query, response)->
         return @error(response) if Object.prototype.toString.call(query) != '[object Object]'
@@ -88,8 +87,8 @@ class App
     emit_message: (message, response) ->
         self = @
 
-        flumelog message, () ->
-            self.end_write(response)
+        flumelog message
+        self.end_write(response)
 
     end_write: (response) ->
         #1x1 gif
