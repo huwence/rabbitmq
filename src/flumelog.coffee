@@ -59,6 +59,7 @@ module.exports = (data, callback) ->
         host: configenv.flume.address,
         port: configenv.flume.port,
         method: 'POST',
+        agent: false,
         headers: {
             'Content-Type': content_type
         }
